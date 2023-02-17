@@ -1,0 +1,7 @@
+*/env*
+*/venv*
+*/temp*
+archive
+logs/*
+**/*.pickle
+.gitignore

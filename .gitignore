@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# local
+/logs
+
+# pickle files for cursors
+*.pickle
