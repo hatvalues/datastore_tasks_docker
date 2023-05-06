@@ -1,3 +1,4 @@
+dictdiffer==0.9.0
 google-api-core==1.23.0
 google-auth==1.23.0
 google-cloud-bigquery==2.0.0
@@ -9,4 +10,5 @@ google-crc32c==1.0.0
 google-resumable-media==1.1.0
 googleapis-common-protos==1.52.0
 logparser @ git+https://github.com/my8100/logparser.git@ed7948b271884af68eb3bb13fa9ee51a4892552c
+protobuf==3.20.0
 

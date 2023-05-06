@@ -1,7 +1,5 @@
 FROM python:3.9-slim
 
-RUN mkdir /usr/src/temp
-
 # bash reqs
 RUN apt-get update -y && apt-get upgrade -y && apt-get install curl -y && apt-get install git gcc -y
 
