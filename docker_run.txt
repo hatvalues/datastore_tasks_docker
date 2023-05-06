@@ -1,11 +1,18 @@
-# For running the containers:
+# build
+docker build . -t dstdkr:latest
+sudo docker build . -t dstdkr:latest
 
+# For running the containers:
 # NOTE: this line:
+
+# Linux Machine
 # --volume $HVSNDBOXSVC:/credentials.json:ro \
-# the environment variable PREPKEY is...
+
+# XPX Mac
+# --volume $DS_SERVICE_KEY:/credentials.json:ro \
+
+# the environment variable is... (to be aligned across both machines)
 # a string literal of the full path to the system account private key on the host machine
-# You may have a different way to implement secure credentials...
-# just make sure that the actual key is never copied into the docker image.
 
 # NOTE: the volumes set up e.g. this line:
 #  --volume "$(pwd)":/usr/src/app \
@@ -24,21 +31,31 @@ sudo docker run -it --rm --name dstasks \
   --env GOOGLE_APPLICATION_CREDENTIALS=/credentials.json \
   --env LOG_LOCATION=logs \
   --volume "$(pwd)":/usr/src/app \
-  --volume "$(pwd)/logs":/usr/src/app/logs \
+  --volume "$(pwd)/logs":/tmp \
   --volume "$(pwd)/files":/usr/src/app/files \
   dstasks:latest
 
+# Mac
+# linux - use sudo if local Docker folder not writable by current user
+docker run -it --rm --name dstdkr \
+  --env DATASTORE_PROJECT_ID=edux-one-dev \
+  --env DATASTORE_DATASET=edux-one-dev \
+  --volume $DS_SERVICE_KEY:/credentials.json:ro \
+  --env GOOGLE_APPLICATION_CREDENTIALS=/credentials.json \
+  --volume "$(pwd)":/usr/src/app \
+  --volume "$(pwd)/logs":/tmp \
+  --volume "$(pwd)/data":/usr/src/app/data \
+  dstdkr
+
+docker build . -t dstdkr:latest
+
 # WINDOWS
-
-docker build . -t dstasks:latest
-
-docker run -it --rm --name dstasks ^
---env DATASTORE_PROJECT_ID=hatvalues-sandbox ^
---env DATASTORE_DATASET=hatvalues-sandbox ^
---volume %HVSNDBOXDSSVC%:/credentials.json:ro ^
+docker run -it --rm --name dstdkr ^
+--env DATASTORE_PROJECT_ID=edux-one-dev ^
+--env DATASTORE_DATASET=edux-one-dev ^
+--volume %DS_SERVICE_KEY%:/credentials.json:ro ^
 --env GOOGLE_APPLICATION_CREDENTIALS=/credentials.json ^
 --env LOG_LOCATION=logs ^
 --volume %CD%:/usr/src/app ^
---volume %CD%/logs:/usr/src/app/logs ^
---volume %CD%/files:/usr/src/app/files ^
-dstasks:latest
+--volume %CD%/logs:/tmp ^
+dstdkr
