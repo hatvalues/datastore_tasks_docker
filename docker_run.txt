@@ -4,22 +4,46 @@ sudo docker build . -t dstdkr:latest
 
 # For running the containers:
 # NOTE: this line:
+
+# Linux Machine
+# --volume $HVSNDBOXSVC:/credentials.json:ro \
+
+# XPX Mac
 # --volume $DS_SERVICE_KEY:/credentials.json:ro \
-# the environment variable DS_SERVICE_KEY is...
+
+# the environment variable is... (to be aligned across both machines)
 # a string literal of the full path to the system account private key on the host machine
 
-# NOTE: this line:
+# NOTE: the volumes set up e.g. this line:
 #  --volume "$(pwd)":/usr/src/app \
-# it is there to make dev easier because don't have to build after changes
+# is there to make dev easier because don't have to build after changes
 # but should not be included when performing final stage (preprod) testing
 
+# LINUX
+
+# use sudo if local Docker folder not writable by current user
+docker build . -t dstasks:latest
+
+sudo docker run -it --rm --name dstasks \
+  --env DATASTORE_PROJECT_ID=hatvalues-sandbox \
+  --env DATASTORE_DATASET=hatvalues-sandbox \
+  --volume $HVSNDBOXDSSVC:/credentials.json:ro \
+  --env GOOGLE_APPLICATION_CREDENTIALS=/credentials.json \
+  --env LOG_LOCATION=logs \
+  --volume "$(pwd)":/usr/src/app \
+  --volume "$(pwd)/logs":/tmp \
+  --volume "$(pwd)/files":/usr/src/app/files \
+  dstasks:latest
+
+# Mac
 # linux - use sudo if local Docker folder not writable by current user
 docker run -it --rm --name dstdkr \
   --env DATASTORE_PROJECT_ID=edux-one-dev \
   --env DATASTORE_DATASET=edux-one-dev \
   --volume $DS_SERVICE_KEY:/credentials.json:ro \
   --env GOOGLE_APPLICATION_CREDENTIALS=/credentials.json \
-  --volume "$(pwd)":/usr/src/app \  
+  --volume "$(pwd)":/usr/src/app \
+  --volume "$(pwd)/logs":/tmp \
   --volume "$(pwd)/data":/usr/src/app/data \
   dstdkr
 
@@ -32,6 +56,6 @@ docker run -it --rm --name dstdkr ^
 --volume %DS_SERVICE_KEY%:/credentials.json:ro ^
 --env GOOGLE_APPLICATION_CREDENTIALS=/credentials.json ^
 --env LOG_LOCATION=logs ^
---volume %CD%/logs:/usr/src/app/logs ^
 --volume %CD%:/usr/src/app ^
+--volume %CD%/logs:/tmp ^
 dstdkr
